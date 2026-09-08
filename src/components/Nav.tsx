@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,11 +15,6 @@ const links = [
 export function Nav({ name }: { name: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   async function signOut() {
     await fetch("/api/auth", { method: "DELETE" });
@@ -72,67 +66,41 @@ export function Nav({ name }: { name: string }) {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 text-sm lg:flex">
-          <span className="max-w-[10rem] truncate text-[var(--ink-soft)]">
+        <div className="flex items-center gap-2 text-sm sm:gap-3">
+          <span className="hidden max-w-[10rem] truncate text-[var(--ink-soft)] sm:inline">
             <strong className="text-[var(--ink)]">{name}</strong>
           </span>
           <button
             type="button"
             onClick={signOut}
-            className="btn btn-ghost !px-3 !py-2 text-sm"
+            className="btn btn-ghost !min-h-10 !px-3 !py-2 text-sm"
           >
             Sign out
           </button>
         </div>
-
-        <button
-          type="button"
-          className="btn btn-ghost !min-h-11 !min-w-11 !px-3 !py-2 lg:hidden"
-          aria-expanded={open}
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? "Close" : "Menu"}
-        </button>
       </div>
 
-      {open ? (
-        <div className="border-t border-[var(--line)] bg-white px-4 py-4 lg:hidden">
-          <nav className="flex flex-col gap-1">
-            {links.map((link) => {
-              const active =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`rounded-2xl px-4 py-3 text-base font-semibold ${
-                    active
-                      ? "bg-[var(--ink)] text-white"
-                      : "bg-[var(--mist)] text-[var(--ink)]"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--line)] pt-4">
-            <p className="truncate text-sm text-[var(--ink-soft)]">
-              Signed in as <strong className="text-[var(--ink)]">{name}</strong>
-            </p>
-            <button
-              type="button"
-              onClick={signOut}
-              className="btn btn-ghost !py-2 text-sm"
+      <nav className="-mx-0 flex gap-1 overflow-x-auto border-t border-[var(--line)] px-4 py-2 sm:px-5 lg:hidden">
+        {links.map((link) => {
+          const active =
+            link.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium ${
+                active
+                  ? "bg-[var(--ink)] text-white"
+                  : "text-[var(--ink-soft)]"
+              }`}
             >
-              Sign out
-            </button>
-          </div>
-        </div>
-      ) : null}
+              {link.short}
+            </Link>
+          );
+        })}
+      </nav>
     </header>
   );
 }
