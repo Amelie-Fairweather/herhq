@@ -24,7 +24,10 @@ export async function readStore(): Promise<Store> {
     const parsed = JSON.parse(raw) as Store;
     return {
       events: parsed.events ?? [],
-      applications: parsed.applications ?? [],
+      applications: (parsed.applications ?? []).map((app) => ({
+        ...app,
+        meetingAvailability: app.meetingAvailability ?? "",
+      })),
       bids: parsed.bids ?? [],
     };
   } catch {

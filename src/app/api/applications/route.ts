@@ -59,6 +59,7 @@ export async function POST(request: Request) {
     contact: (body.contact ?? "").trim(),
     heardAbout: (body.heardAbout ?? "").trim(),
     whyStart: (body.whyStart ?? "").trim(),
+    meetingAvailability: (body.meetingAvailability ?? "").trim(),
     status: "open",
     awardedTo: null,
     awardedAt: null,

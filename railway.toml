@@ -7,5 +7,7 @@ restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 5
 
 # After first deploy: Railway → Service → Volumes → Add Volume
-# Mount path: /data
-# Then set variable DATA_DIR=/data so accounts survive redeploys.
+# Mount path must match DATA_DIR exactly, e.g.:
+#   Mount: /data     →  variable DATA_DIR=/data
+#   Mount: /app/data →  variable DATA_DIR=/app/data
+# Relative values like "data" do NOT use the volume and wipe on every deploy.

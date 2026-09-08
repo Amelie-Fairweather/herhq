@@ -80,6 +80,14 @@ export async function POST(request: Request) {
     "why do you want",
     "why start",
   );
+  const meetingAvailability = pick(
+    "meetingAvailability",
+    "Please list 1-3 dates and times (SPECIFY TIME ZONE) you are able to meet virtually for no longer than 30 minutes. Note: you will receive further clarification on this and times are up for change.",
+    "dates and times",
+    "meet virtually",
+    "time zone",
+    "available to meet",
+  );
   const formNumberRaw = pick("formNumber", "applicationNumber", "response number");
   const formNumber = Number.isFinite(Number(formNumberRaw))
     ? Number(formNumberRaw)
@@ -103,6 +111,7 @@ export async function POST(request: Request) {
     contact: contact.trim(),
     heardAbout: heardAbout.trim(),
     whyStart: whyStart.trim(),
+    meetingAvailability: meetingAvailability.trim(),
     status: "open",
     awardedTo: null,
     awardedAt: null,

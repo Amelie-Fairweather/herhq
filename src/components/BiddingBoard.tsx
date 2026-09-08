@@ -25,6 +25,7 @@ export function BiddingBoard() {
     contact: "",
     heardAbout: "",
     whyStart: "",
+    meetingAvailability: "",
   });
 
   const load = useCallback(async () => {
@@ -114,6 +115,7 @@ export function BiddingBoard() {
       contact: "",
       heardAbout: "",
       whyStart: "",
+      meetingAvailability: "",
     });
     setShowManual(false);
     await load();
@@ -122,13 +124,13 @@ export function BiddingBoard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(["open", "completed", "all"] as const).map((f) => (
             <button
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              className={`btn !px-4 !py-2 text-sm ${
+              className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
                 filter === f ? "btn-secondary" : "btn-ghost"
               }`}
             >
@@ -138,7 +140,7 @@ export function BiddingBoard() {
         </div>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary !min-h-10 w-full text-sm sm:w-auto"
           onClick={() => setShowManual((v) => !v)}
         >
           {showManual ? "Close form" : "Add application manually"}
@@ -152,7 +154,7 @@ export function BiddingBoard() {
       ) : null}
 
       {showManual ? (
-        <form onSubmit={addManual} className="panel fade-up rounded-3xl p-6">
+        <form onSubmit={addManual} className="panel fade-up rounded-3xl p-4 sm:p-6">
           <h3 className="display text-2xl">Manual application</h3>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {(
@@ -186,8 +188,23 @@ export function BiddingBoard() {
                 }
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="label">
+                Meeting availability (dates/times + time zone)
+              </label>
+              <textarea
+                className="field min-h-24"
+                value={manual.meetingAvailability}
+                onChange={(e) =>
+                  setManual((m) => ({
+                    ...m,
+                    meetingAvailability: e.target.value,
+                  }))
+                }
+              />
+            </div>
           </div>
-          <button type="submit" className="btn btn-secondary mt-4">
+          <button type="submit" className="btn btn-secondary mt-4 w-full sm:w-auto">
             Add to bid board
           </button>
         </form>
@@ -216,7 +233,7 @@ export function BiddingBoard() {
             return (
               <article
                 key={app.id}
-                className="panel fade-up rounded-3xl p-6"
+                className="panel fade-up rounded-3xl p-4 sm:p-6"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -227,7 +244,7 @@ export function BiddingBoard() {
                           #{app.formNumber}
                         </span>
                       ) : null}
-                      <h3 className="display text-2xl md:text-3xl">
+                      <h3 className="display text-xl sm:text-2xl md:text-3xl">
                         {app.nameAndGrade}
                       </h3>
                       <span
@@ -264,11 +281,17 @@ export function BiddingBoard() {
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   <div className="rounded-2xl bg-[var(--mist)]/60 p-4">
                     <p className="label">Why start a HER</p>
-                    <p className="text-sm leading-relaxed">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
                       {app.whyStart || "—"}
                     </p>
                   </div>
-                  <div className="space-y-3 rounded-2xl bg-[var(--mist)]/60 p-4 text-sm">
+                  <div className="rounded-2xl bg-[var(--mist)]/60 p-4">
+                    <p className="label">Meeting availability</p>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {app.meetingAvailability || "—"}
+                    </p>
+                  </div>
+                  <div className="space-y-3 rounded-2xl bg-[var(--mist)]/60 p-4 text-sm md:col-span-2">
                     <p>
                       <span className="label !mb-0 inline">Co-leaders</span>
                       <br />
@@ -314,14 +337,14 @@ export function BiddingBoard() {
                         <div className="flex flex-wrap gap-3">
                           <button
                             type="button"
-                            className="btn btn-primary"
+                            className="btn btn-primary flex-1 sm:flex-none"
                             onClick={() => void respond(app.id, "bid")}
                           >
                             Bid
                           </button>
                           <button
                             type="button"
-                            className="btn btn-ghost"
+                            className="btn btn-ghost flex-1 sm:flex-none"
                             onClick={() => void respond(app.id, "pass")}
                           >
                             Not bid

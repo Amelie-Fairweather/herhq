@@ -26,6 +26,8 @@ function onFormSubmit(e) {
       payload.contact = payload.contact || fallback.contact;
       payload.heardAbout = payload.heardAbout || fallback.heardAbout;
       payload.whyStart = payload.whyStart || fallback.whyStart;
+      payload.meetingAvailability =
+        payload.meetingAvailability || fallback.meetingAvailability;
       payload.raw = Object.assign({}, fallback.raw || {}, payload.raw || {});
     }
 
@@ -107,6 +109,13 @@ function buildPayload_(e) {
     ),
     heardAbout: pick("How did you hear about us?", "hear about"),
     whyStart: pick("Why do you want to start a HER?", "why do you want", "why start"),
+    meetingAvailability: pick(
+      "Please list 1-3 dates and times (SPECIFY TIME ZONE) you are able to meet virtually for no longer than 30 minutes. Note: you will receive further clarification on this and times are up for change.",
+      "dates and times",
+      "meet virtually",
+      "time zone",
+      "available to meet",
+    ),
     raw: named,
   };
 }
@@ -163,6 +172,7 @@ function readLatestSheetRow_() {
       contact: "",
       heardAbout: "",
       whyStart: "",
+      meetingAvailability: "",
       raw: {},
     };
   }
@@ -192,6 +202,7 @@ function testIngestConnection() {
       contact: "test-connection@hereducation.org",
       heardAbout: "Apps Script testIngestConnection()",
       whyStart: "Verifying the form → HQ bridge works.",
+      meetingAvailability: "Mon 4pm ET, Wed 5pm ET, Fri 3pm ET",
     }),
     muteHttpExceptions: true,
   });

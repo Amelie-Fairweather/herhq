@@ -134,8 +134,8 @@ export function ReportsBoard() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.95fr_1.2fr]">
-      <form onSubmit={onSubmit} className="panel fade-up h-fit rounded-3xl p-6">
-        <h2 className="display text-3xl">File this week</h2>
+      <form onSubmit={onSubmit} className="panel fade-up h-fit rounded-3xl p-4 sm:p-6">
+        <h2 className="display text-2xl sm:text-3xl">File this week</h2>
         <p className="mt-2 text-sm text-[var(--ink-soft)]">
           Reports are saved as files on the site. When a week ends, they move
           into the archive folder automatically.
@@ -217,16 +217,16 @@ export function ReportsBoard() {
           <p className="mt-3 text-sm text-[var(--rose-deep)]">{error}</p>
         ) : null}
 
-        <button type="submit" className="btn btn-primary mt-5">
+        <button type="submit" className="btn btn-primary mt-5 w-full sm:w-auto">
           Submit weekly report
         </button>
       </form>
 
       <section className="space-y-5">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className={`btn !px-4 !py-2 text-sm ${
+            className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
               tab === "current" ? "btn-secondary" : "btn-ghost"
             }`}
             onClick={() => setTab("current")}
@@ -235,7 +235,7 @@ export function ReportsBoard() {
           </button>
           <button
             type="button"
-            className={`btn !px-4 !py-2 text-sm ${
+            className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
               tab === "archive" ? "btn-secondary" : "btn-ghost"
             }`}
             onClick={() => setTab("archive")}
@@ -256,7 +256,7 @@ export function ReportsBoard() {
             groupedCurrent.map(([week, list], i) => (
               <div
                 key={week}
-                className="panel fade-up rounded-3xl p-6"
+                className="panel fade-up rounded-3xl p-4 sm:p-6"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -276,8 +276,8 @@ export function ReportsBoard() {
             ))
           )
         ) : (
-          <div className="panel fade-up rounded-3xl p-6">
-            <h3 className="display text-2xl">Archive folders</h3>
+          <div className="panel fade-up rounded-3xl p-4 sm:p-6">
+            <h3 className="display text-xl sm:text-2xl">Archive folders</h3>
             <p className="mt-1 text-sm text-[var(--ink-soft)]">
               Each finished week lives in{" "}
               <code className="rounded bg-[var(--mist)] px-1.5 py-0.5 text-xs">

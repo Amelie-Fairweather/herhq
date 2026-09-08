@@ -21,30 +21,30 @@ export default async function HomePage() {
 
   return (
     <AppShell>
-      <section className="fade-up flex flex-col gap-5 sm:flex-row sm:items-center">
+      <section className="fade-up flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
         <Image
           src="/logo.jpeg"
           alt="H.E.R. Education Required logo"
           width={112}
           height={112}
           priority
-          className="h-24 w-24 rounded-2xl object-cover shadow-md ring-1 ring-[var(--line)] md:h-28 md:w-28"
+          className="h-20 w-20 rounded-2xl object-cover shadow-md ring-1 ring-[var(--line)] sm:h-24 sm:w-24 md:h-28 md:w-28"
         />
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--rose)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--rose)] sm:text-xs sm:tracking-[0.22em]">
             Welcome back{session ? `, ${session.name}` : ""}
           </p>
-          <h2 className="display mt-2 text-4xl text-[var(--ink)] md:text-5xl">
+          <h2 className="display mt-2 text-3xl text-[var(--ink)] sm:text-4xl md:text-5xl">
             Organize the movement.
           </h2>
-          <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
+          <p className="mt-3 max-w-2xl text-sm text-[var(--ink-soft)] sm:text-base">
             Post shared events, bid to onboard new chapter leaders from the
             registration form, and file your weekly self report — all in one place.
           </p>
         </div>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
+      <section className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
         {[
           {
             href: "/calendar",
@@ -68,23 +68,23 @@ export default async function HomePage() {
           <Link
             key={card.href}
             href={card.href}
-            className="panel fade-up rounded-3xl p-6 transition-transform hover:-translate-y-1"
+            className="panel fade-up rounded-3xl p-5 transition-transform hover:-translate-y-1 sm:p-6"
             style={{ animationDelay: `${80 + i * 60}ms` }}
           >
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ink-soft)] sm:text-xs sm:tracking-[0.16em]">
               <span className="live-dot" />
               {card.label}
             </div>
-            <p className="display mt-4 text-5xl text-[var(--ink)]">{card.value}</p>
+            <p className="display mt-3 text-4xl text-[var(--ink)] sm:mt-4 sm:text-5xl">{card.value}</p>
             <p className="mt-1 text-sm text-[var(--ink-soft)]">{card.hint}</p>
           </Link>
         ))}
       </section>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="panel rounded-3xl p-6">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="display text-2xl">Coming up</h3>
+      <section className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-2 lg:gap-6">
+        <div className="panel rounded-3xl p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="display text-xl sm:text-2xl">Coming up</h3>
             <Link href="/calendar" className="text-sm font-semibold text-[var(--rose)]">
               Open calendar →
             </Link>
@@ -111,9 +111,9 @@ export default async function HomePage() {
           </ul>
         </div>
 
-        <div className="panel rounded-3xl p-6">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="display text-2xl">Newest applications</h3>
+        <div className="panel rounded-3xl p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="display text-xl sm:text-2xl">Newest applications</h3>
             <Link href="/bidding" className="text-sm font-semibold text-[var(--rose)]">
               Bid board →
             </Link>

@@ -87,10 +87,10 @@ export function MyBidsBoard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          className={`btn !px-4 !py-2 text-sm ${
+          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
             tab === "active" ? "btn-secondary" : "btn-ghost"
           }`}
           onClick={() => setTab("active")}
@@ -99,7 +99,7 @@ export function MyBidsBoard() {
         </button>
         <button
           type="button"
-          className={`btn !px-4 !py-2 text-sm ${
+          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
             tab === "completed" ? "btn-secondary" : "btn-ghost"
           }`}
           onClick={() => setTab("completed")}
@@ -139,7 +139,7 @@ export function MyBidsBoard() {
             app ? (
               <article
                 key={bid.id}
-                className="panel fade-up rounded-3xl p-6"
+                className="panel fade-up rounded-3xl p-4 sm:p-6"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -167,17 +167,17 @@ export function MyBidsBoard() {
                     </p>
                   </div>
                   {bid.status === "active" ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                       <button
                         type="button"
-                        className="btn btn-primary !py-2 text-sm"
+                        className="btn btn-primary !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
                         onClick={() => void complete(app.id, bid.id)}
                       >
                         Complete
                       </button>
                       <button
                         type="button"
-                        className="btn btn-ghost !py-2 text-sm"
+                        className="btn btn-ghost !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
                         onClick={() => void withdraw(app.id, bid.id)}
                       >
                         Withdraw
@@ -186,7 +186,7 @@ export function MyBidsBoard() {
                   ) : null}
                 </div>
 
-                <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
+                <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
                   <div>
                     <p className="label">Contact</p>
                     <p>{app.contact || "—"}</p>
@@ -197,7 +197,13 @@ export function MyBidsBoard() {
                   </div>
                   <div>
                     <p className="label">Why start a HER</p>
-                    <p>{app.whyStart || "—"}</p>
+                    <p className="whitespace-pre-wrap">{app.whyStart || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="label">Meeting availability</p>
+                    <p className="whitespace-pre-wrap">
+                      {app.meetingAvailability || "—"}
+                    </p>
                   </div>
                 </div>
               </article>

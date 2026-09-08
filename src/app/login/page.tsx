@@ -42,24 +42,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="shell relative flex min-h-screen items-center justify-center bg-[#fff5fb] px-5 py-12">
-      <div className="relative z-10 grid w-full max-w-5xl gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-center">
-        <div className="fade-up">
+    <div className="shell relative flex min-h-screen items-center justify-center bg-[#fff5fb] px-4 py-8 sm:px-5 sm:py-12">
+      <div className="relative z-10 grid w-full max-w-5xl gap-8 md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-10">
+        <div className="fade-up order-1 text-center md:order-none md:text-left">
           <Image
             src="/logo.jpeg"
             alt="H.E.R. Education Required logo"
             width={160}
             height={160}
             priority
-            className="mb-5 h-28 w-28 rounded-2xl object-cover shadow-md ring-2 ring-[#fe4cba]/40 md:h-36 md:w-36"
+            className="mx-auto mb-4 h-24 w-24 rounded-2xl object-cover shadow-md ring-2 ring-[#fe4cba]/40 sm:mb-5 sm:h-28 sm:w-28 md:mx-0 md:h-36 md:w-36"
           />
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#fe4cba]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#fe4cba] sm:text-xs sm:tracking-[0.28em]">
             hereducation.org
           </p>
-          <h1 className="display mt-3 max-w-xl text-5xl leading-[1.05] text-[#9b1468] md:text-6xl">
+          <h1 className="display mt-2 text-4xl leading-[1.08] text-[#9b1468] sm:mt-3 sm:text-5xl md:text-6xl">
             Her Education Required
           </h1>
-          <p className="mt-5 max-w-md text-lg text-[#9b1468]/90">
+          <p className="mx-auto mt-3 max-w-md text-base text-[#9b1468]/90 sm:mt-5 sm:text-lg md:mx-0">
             Leadership HQ — each person gets their own account. No external
             login services, just local usernames for the team.
           </p>
@@ -67,13 +67,13 @@ export default function LoginPage() {
 
         <form
           onSubmit={onSubmit}
-          className="panel fade-up rounded-3xl p-7 md:p-8"
+          className="panel fade-up order-2 rounded-3xl p-5 sm:p-7 md:order-none md:p-8"
           style={{ animationDelay: "80ms" }}
         >
-          <div className="flex gap-2 rounded-full bg-[var(--mist)] p-1">
+          <div className="flex gap-1 rounded-full bg-[var(--mist)] p-1 sm:gap-2">
             <button
               type="button"
-              className={`flex-1 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+              className={`min-h-11 flex-1 rounded-full px-2 py-2 text-sm font-semibold transition-colors sm:px-3 ${
                 mode === "signin"
                   ? "bg-[var(--ink)] text-white"
                   : "text-[var(--ink-soft)]"
@@ -87,7 +87,7 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
-              className={`flex-1 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+              className={`min-h-11 flex-1 rounded-full px-2 py-2 text-sm font-semibold transition-colors sm:px-3 ${
                 mode === "create"
                   ? "bg-[var(--ink)] text-white"
                   : "text-[var(--ink-soft)]"
@@ -101,7 +101,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <h2 className="display mt-5 text-3xl text-[var(--ink)]">
+          <h2 className="display mt-5 text-2xl text-[var(--ink)] sm:text-3xl">
             {mode === "create" ? "Join HQ" : "Welcome back"}
           </h2>
           <p className="mt-2 text-sm text-[var(--ink-soft)]">
@@ -168,7 +168,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="btn btn-primary mt-6 w-full"
+            className="btn btn-primary mt-6 w-full !min-h-12"
             disabled={loading}
           >
             {loading

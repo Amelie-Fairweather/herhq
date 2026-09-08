@@ -82,20 +82,20 @@ export function CalendarBoard() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.35fr_0.9fr]">
-      <section className="panel fade-up rounded-3xl p-5 md:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="display text-3xl">{format(cursor, "MMMM yyyy")}</h2>
+      <section className="panel fade-up overflow-hidden rounded-3xl p-4 sm:p-5 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="display text-2xl sm:text-3xl">{format(cursor, "MMMM yyyy")}</h2>
           <div className="flex gap-2">
             <button
               type="button"
-              className="btn btn-ghost !px-3 !py-2"
+              className="btn btn-ghost !min-h-10 !px-3 !py-2"
               onClick={() => setCursor((c) => addMonths(c, -1))}
             >
               ←
             </button>
             <button
               type="button"
-              className="btn btn-ghost !px-3 !py-2"
+              className="btn btn-ghost !min-h-10 !px-3 !py-2"
               onClick={() => {
                 const now = new Date();
                 setCursor(startOfMonth(now));
@@ -106,7 +106,7 @@ export function CalendarBoard() {
             </button>
             <button
               type="button"
-              className="btn btn-ghost !px-3 !py-2"
+              className="btn btn-ghost !min-h-10 !px-3 !py-2"
               onClick={() => setCursor((c) => addMonths(c, 1))}
             >
               →
@@ -114,15 +114,26 @@ export function CalendarBoard() {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ink-soft)]">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-            <div key={d} className="py-2">
-              {d}
+        <div className="mt-4 grid grid-cols-7 gap-0.5 text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-soft)] sm:mt-5 sm:gap-1 sm:text-xs sm:tracking-[0.12em]">
+          {(
+            [
+              ["S", "Sun"],
+              ["M", "Mon"],
+              ["T", "Tue"],
+              ["W", "Wed"],
+              ["T", "Thu"],
+              ["F", "Fri"],
+              ["S", "Sat"],
+            ] as const
+          ).map(([short, full], i) => (
+            <div key={`${full}-${i}`} className="py-1 sm:py-2">
+              <span className="sm:hidden">{short}</span>
+              <span className="hidden sm:inline">{full}</span>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
           {days.map((day) => {
             const inMonth = isSameMonth(day, cursor);
             const active = isSameDay(day, selected);
@@ -132,15 +143,15 @@ export function CalendarBoard() {
                 key={day.toISOString()}
                 type="button"
                 onClick={() => setSelected(day)}
-                className={`min-h-16 rounded-2xl border p-2 text-left transition-colors ${
+                className={`min-h-11 rounded-xl border p-1.5 text-left transition-colors sm:min-h-16 sm:rounded-2xl sm:p-2 ${
                   active
-                    ? "border-[var(--rose)] bg-[rgba(196,69,105,0.1)]"
+                    ? "border-[var(--rose)] bg-[rgba(254,76,186,0.12)]"
                     : "border-transparent hover:bg-[var(--mist)]"
                 } ${inMonth ? "text-[var(--ink)]" : "text-[var(--ink-soft)]/50"}`}
               >
-                <span className="text-sm font-semibold">{format(day, "d")}</span>
+                <span className="text-xs font-semibold sm:text-sm">{format(day, "d")}</span>
                 {count > 0 ? (
-                  <span className="mt-2 block h-1.5 w-1.5 rounded-full bg-[var(--rose)]" />
+                  <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-[var(--rose)] sm:mt-2" />
                 ) : null}
               </button>
             );
@@ -149,8 +160,8 @@ export function CalendarBoard() {
       </section>
 
       <div className="space-y-6">
-        <section className="panel fade-up rounded-3xl p-5 md:p-6" style={{ animationDelay: "70ms" }}>
-          <h3 className="display text-2xl">{format(selected, "EEEE, MMM d")}</h3>
+        <section className="panel fade-up rounded-3xl p-4 sm:p-5 md:p-6" style={{ animationDelay: "70ms" }}>
+          <h3 className="display text-xl sm:text-2xl">{format(selected, "EEEE, MMM d")}</h3>
           {loading ? (
             <p className="mt-3 text-sm text-[var(--ink-soft)]">Loading…</p>
           ) : dayEvents.length === 0 ? (
@@ -188,8 +199,8 @@ export function CalendarBoard() {
           )}
         </section>
 
-        <section className="panel fade-up rounded-3xl p-5 md:p-6" style={{ animationDelay: "120ms" }}>
-          <h3 className="display text-2xl">Post an event</h3>
+        <section className="panel fade-up rounded-3xl p-4 sm:p-5 md:p-6" style={{ animationDelay: "120ms" }}>
+          <h3 className="display text-xl sm:text-2xl">Post an event</h3>
           <p className="mt-1 text-sm text-[var(--ink-soft)]">
             Anyone on leadership can add meetings, deadlines, and chapter calls.
           </p>
@@ -257,7 +268,7 @@ export function CalendarBoard() {
               />
             </div>
             {error ? <p className="text-sm text-[var(--rose-deep)]">{error}</p> : null}
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary w-full sm:w-auto">
               Add to calendar
             </button>
           </form>

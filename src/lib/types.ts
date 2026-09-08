@@ -20,6 +20,8 @@ export type Application = {
   contact: string;
   heardAbout: string;
   whyStart: string;
+  /** 1–3 virtual meeting windows from the registration form */
+  meetingAvailability: string;
   status: ApplicationStatus;
   awardedTo: string | null;
   awardedAt: string | null;

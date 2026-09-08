@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "mkdir -p data/reports/current data/reports/archive && next start -H 0.0.0.0",
+    "start": "mkdir -p \"${DATA_DIR:-data}/reports/current\" \"${DATA_DIR:-data}/reports/archive\" && next start -H 0.0.0.0",
     "lint": "eslint"
   },
   "dependencies": {
