@@ -41,9 +41,9 @@ html {
 
 body {
   background:
-    radial-gradient(1200px 500px at 10% -10%, rgba(254, 76, 186, 0.22), transparent 55%),
-    radial-gradient(900px 420px at 100% 0%, rgba(254, 171, 239, 0.55), transparent 50%),
-    linear-gradient(180deg, #feabef 0%, #fff0fb 42%, #ffd6f5 100%);
+    radial-gradient(1000px 480px at 8% -5%, rgba(254, 76, 186, 0.16), transparent 60%),
+    radial-gradient(900px 420px at 100% 0%, rgba(254, 171, 239, 0.35), transparent 55%),
+    #fff0fb;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;

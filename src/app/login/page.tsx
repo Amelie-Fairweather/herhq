@@ -42,7 +42,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="shell relative flex min-h-screen items-center justify-center bg-[#feabef] px-5 py-12">
+    <div className="shell relative flex min-h-screen items-center justify-center bg-[#fff0fb] px-5 py-12">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_420px_at_10%_-10%,rgba(254,76,186,0.18),transparent_55%),radial-gradient(700px_360px_at_100%_0%,rgba(254,171,239,0.35),transparent_50%)]" />
       <div className="relative z-10 grid w-full max-w-5xl gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-center">
         <div className="fade-up">
           <Image
