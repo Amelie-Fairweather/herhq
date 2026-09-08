@@ -190,16 +190,7 @@ export function BiddingBoard() {
           <div className="panel rounded-3xl p-8 text-center">
             <p className="display text-2xl">No applications here yet</p>
             <p className="mt-2 text-sm text-[var(--ink-soft)]">
-              When someone submits the{" "}
-              <a
-                className="font-semibold text-[var(--rose)] underline"
-                href="https://docs.google.com/forms/d/1uCjsP-O7k6S3d_As3J2pampyR4RJQ0K7z5-txtg6EfA/viewform"
-                target="_blank"
-                rel="noreferrer"
-              >
-                HER registration form
-              </a>
-              , it will land here for onboarding bids.
+              New registration form submissions will show up here for bidding.
             </p>
           </div>
         ) : (

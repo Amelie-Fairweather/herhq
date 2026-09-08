@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { getIngestSecret, getSession } from "@/lib/auth";
 import { readStore, updateStore } from "@/lib/db";
 import type { Application } from "@/lib/types";
 import { uid } from "@/lib/utils";
@@ -97,4 +97,40 @@ export async function PATCH(request: Request) {
   }
 
   return NextResponse.json({ application: updated });
+}
+
+export async function DELETE(request: Request) {
+  const session = await getSession();
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  const clearAll = searchParams.get("all") === "1";
+  const secret =
+    request.headers.get("x-ingest-secret") || searchParams.get("secret");
+
+  // Signed-in leaders can delete; ingest secret can wipe everything (cleanup)
+  const authed = Boolean(session) || secret === getIngestSecret();
+  if (!authed) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (clearAll) {
+    await updateStore((store) => ({
+      ...store,
+      applications: [],
+      bids: [],
+    }));
+    return NextResponse.json({ ok: true, cleared: true });
+  }
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+
+  await updateStore((store) => ({
+    ...store,
+    applications: store.applications.filter((a) => a.id !== id),
+    bids: store.bids.filter((b) => b.applicationId !== id),
+  }));
+
+  return NextResponse.json({ ok: true });
 }

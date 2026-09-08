@@ -110,8 +110,7 @@ export default async function HomePage() {
           <ul className="mt-4 space-y-3">
             {openApps.length === 0 ? (
               <li className="text-sm text-[var(--ink-soft)]">
-                No open applications. New Google Form submissions will appear
-                here automatically once ingest is connected.
+                No open applications right now.
               </li>
             ) : (
               openApps.slice(0, 4).map((app) => (
