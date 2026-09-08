@@ -15,6 +15,14 @@ export default function MyBidsPage() {
           Track onboardings you bid on. Mark Complete when the call is done, or
           Withdraw if you can no longer take it.
         </p>
+        <a
+          href="https://drive.google.com/file/d/1XtqHgl5d_L6N_kepNi9Y8eXsdocYWf2Y/view?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary mt-4 w-full sm:w-auto"
+        >
+          How to onboard your first meeting
+        </a>
       </section>
       <MyBidsBoard />
     </AppShell>
