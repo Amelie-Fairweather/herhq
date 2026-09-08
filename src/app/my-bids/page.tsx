@@ -7,6 +7,7 @@ const guides = [
     eyebrow: "First call",
     title: "How to onboard your first meeting",
     blurb: "A short walkthrough before you hop on Zoom.",
+    cta: "Open guide",
     accent: "from-[#ffe0f4] to-[#ffc6eb]",
   },
   {
@@ -14,7 +15,16 @@ const guides = [
     eyebrow: "Inbox ready",
     title: "Application emails",
     blurb: "Copy-ready notes for reaching out after you bid.",
+    cta: "Open guide",
     accent: "from-[#ffd6f0] to-[#feabef]",
+  },
+  {
+    href: "https://drive.google.com/drive/folders/1CGoRgZqagJMfPTwF6v5LCps0s7Q3gOiF",
+    eyebrow: "Everything else",
+    title: "View our resources",
+    blurb: "Pitch drafts, roles, training, and the full HER folder.",
+    cta: "Open folder",
+    accent: "from-[#ffccec] to-[#fe4cba]/35",
   },
 ] as const;
 
@@ -33,7 +43,7 @@ export default function MyBidsPage() {
           Withdraw if you can no longer take it.
         </p>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {guides.map((guide, i) => (
             <a
               key={guide.href}
@@ -60,7 +70,7 @@ export default function MyBidsPage() {
                 </h3>
                 <p className="mt-2 text-sm text-[var(--ink-soft)]">{guide.blurb}</p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--rose-deep)] transition-transform duration-300 group-hover:translate-x-1">
-                  Open guide
+                  {guide.cta}
                   <span aria-hidden className="text-base leading-none">
                     →
                   </span>
