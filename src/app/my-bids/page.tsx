@@ -15,14 +15,24 @@ export default function MyBidsPage() {
           Track onboardings you bid on. Mark Complete when the call is done, or
           Withdraw if you can no longer take it.
         </p>
-        <a
-          href="https://drive.google.com/file/d/1XtqHgl5d_L6N_kepNi9Y8eXsdocYWf2Y/view?usp=sharing"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-primary mt-4 w-full sm:w-auto"
-        >
-          How to onboard your first meeting
-        </a>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <a
+            href="https://drive.google.com/file/d/1XtqHgl5d_L6N_kepNi9Y8eXsdocYWf2Y/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary w-full sm:w-auto"
+          >
+            How to onboard your first meeting
+          </a>
+          <a
+            href="https://drive.google.com/file/d/1LD5VfDUsPlxIbqV74q6P4HxhBuVV5SW-/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary w-full sm:w-auto"
+          >
+            Application emails
+          </a>
+        </div>
       </section>
       <MyBidsBoard />
     </AppShell>
