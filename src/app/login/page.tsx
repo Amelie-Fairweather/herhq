@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -47,6 +48,14 @@ export default function LoginPage() {
 
       <div className="relative z-10 grid w-full max-w-5xl gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-end">
         <div className="fade-up text-white">
+          <Image
+            src="/logo.jpeg"
+            alt="H.E.R. Education Required logo"
+            width={160}
+            height={160}
+            priority
+            className="mb-5 h-28 w-28 rounded-2xl object-cover shadow-lg ring-2 ring-white/30 md:h-36 md:w-36"
+          />
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
             hereducation.org
           </p>

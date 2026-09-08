@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { AppShell } from "@/components/AppShell";
@@ -20,17 +21,27 @@ export default async function HomePage() {
 
   return (
     <AppShell>
-      <section className="fade-up">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--rose)]">
-          Welcome back{session ? `, ${session.name}` : ""}
-        </p>
-        <h2 className="display mt-2 text-4xl text-[var(--ink)] md:text-5xl">
-          Organize the movement.
-        </h2>
-        <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
-          Post shared events, bid to onboard new chapter leaders from the
-          registration form, and file your weekly self report — all in one place.
-        </p>
+      <section className="fade-up flex flex-col gap-5 sm:flex-row sm:items-center">
+        <Image
+          src="/logo.jpeg"
+          alt="H.E.R. Education Required logo"
+          width={112}
+          height={112}
+          priority
+          className="h-24 w-24 rounded-2xl object-cover shadow-md ring-1 ring-[var(--line)] md:h-28 md:w-28"
+        />
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--rose)]">
+            Welcome back{session ? `, ${session.name}` : ""}
+          </p>
+          <h2 className="display mt-2 text-4xl text-[var(--ink)] md:text-5xl">
+            Organize the movement.
+          </h2>
+          <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
+            Post shared events, bid to onboard new chapter leaders from the
+            registration form, and file your weekly self report — all in one place.
+          </p>
+        </div>
       </section>
 
       <section className="mt-8 grid gap-4 md:grid-cols-3">
