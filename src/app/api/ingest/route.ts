@@ -80,6 +80,12 @@ export async function POST(request: Request) {
     "why do you want",
     "why start",
   );
+  const formNumberRaw = pick("formNumber", "applicationNumber", "response number");
+  const formNumber = Number.isFinite(Number(formNumberRaw))
+    ? Number(formNumberRaw)
+    : Number.isFinite(Number(body.formNumber))
+      ? Number(body.formNumber)
+      : null;
 
   if (!nameAndGrade.trim() || !schoolTownState.trim()) {
     return NextResponse.json(
@@ -90,6 +96,7 @@ export async function POST(request: Request) {
 
   const application: Application = {
     id: uid(),
+    formNumber,
     nameAndGrade: nameAndGrade.trim(),
     schoolTownState: schoolTownState.trim(),
     coLeaders: coLeaders.trim(),

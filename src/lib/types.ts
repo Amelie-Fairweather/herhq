@@ -2,21 +2,22 @@ export type CalendarEvent = {
   id: string;
   title: string;
   description: string;
-  start: string; // ISO datetime
-  end: string; // ISO datetime
+  start: string;
+  end: string;
   location: string;
   createdBy: string;
   createdAt: string;
 };
 
-export type ApplicationStatus = "open" | "awarded" | "archived";
+export type ApplicationStatus = "open" | "awarded" | "completed" | "archived";
 
 export type Application = {
   id: string;
+  formNumber?: number | null;
   nameAndGrade: string;
   schoolTownState: string;
   coLeaders: string;
-  contact: string; // private
+  contact: string;
   heardAbout: string;
   whyStart: string;
   status: ApplicationStatus;
@@ -26,19 +27,23 @@ export type Application = {
   source: "google-form" | "manual";
 };
 
+export type BidStatus = "active" | "withdrawn" | "completed" | "passed";
+
 export type Bid = {
   id: string;
   applicationId: string;
   bidderName: string;
-  note: string;
+  bidderUsername: string;
+  status: BidStatus;
   createdAt: string;
+  completedAt: string | null;
 };
 
 export type WeeklyReport = {
   id: string;
   authorName: string;
   username?: string;
-  weekOf: string; // YYYY-MM-DD (Monday)
+  weekOf: string;
   wins: string;
   blockers: string;
   nextWeek: string;

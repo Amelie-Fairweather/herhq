@@ -4,11 +4,18 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import type { Application, Bid } from "@/lib/types";
 
+type Me = { username: string; name: string };
+
+function isMine(bid: Bid, me: Me | null) {
+  if (!me) return false;
+  return bid.bidderUsername === me.username || bid.bidderName === me.name;
+}
+
 export function BiddingBoard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [bids, setBids] = useState<Bid[]>([]);
-  const [filter, setFilter] = useState<"open" | "awarded" | "all">("open");
-  const [noteByApp, setNoteByApp] = useState<Record<string, string>>({});
+  const [me, setMe] = useState<Me | null>(null);
+  const [filter, setFilter] = useState<"open" | "completed" | "all">("open");
   const [error, setError] = useState("");
   const [showManual, setShowManual] = useState(false);
   const [manual, setManual] = useState({
@@ -25,6 +32,7 @@ export function BiddingBoard() {
     const data = (await res.json()) as {
       applications?: Application[];
       bids?: Bid[];
+      me?: Me;
       error?: string;
     };
     if (!res.ok) {
@@ -33,42 +41,45 @@ export function BiddingBoard() {
     }
     setApplications(data.applications || []);
     setBids(data.bids || []);
+    setMe(data.me || null);
   }, []);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const visible = applications.filter((a) =>
-    filter === "all" ? true : a.status === filter,
-  );
+  const visible = applications.filter((a) => {
+    if (filter === "all") return true;
+    if (filter === "open") return a.status === "open";
+    if (filter === "completed") return a.status === "completed";
+    return true;
+  });
 
-  async function placeBid(applicationId: string) {
+  async function respond(applicationId: string, action: "bid" | "pass") {
     setError("");
     const res = await fetch(`/api/applications/${applicationId}/bids`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ note: noteByApp[applicationId] || "" }),
+      body: JSON.stringify({ action }),
     });
     const data = (await res.json()) as { error?: string };
     if (!res.ok) {
-      setError(data.error || "Could not place bid");
+      setError(data.error || "Could not save response");
       return;
     }
-    setNoteByApp((m) => ({ ...m, [applicationId]: "" }));
     await load();
   }
 
-  async function award(applicationId: string, awardTo: string) {
+  async function withdraw(applicationId: string, bidId: string) {
     setError("");
-    const res = await fetch("/api/applications", {
+    const res = await fetch(`/api/applications/${applicationId}/bids`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: applicationId, awardTo }),
+      body: JSON.stringify({ action: "withdraw", bidId }),
     });
     const data = (await res.json()) as { error?: string };
     if (!res.ok) {
-      setError(data.error || "Could not award");
+      setError(data.error || "Could not withdraw");
       return;
     }
     await load();
@@ -112,7 +123,7 @@ export function BiddingBoard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-2">
-          {(["open", "awarded", "all"] as const).map((f) => (
+          {(["open", "completed", "all"] as const).map((f) => (
             <button
               key={f}
               type="button"
@@ -143,9 +154,6 @@ export function BiddingBoard() {
       {showManual ? (
         <form onSubmit={addManual} className="panel fade-up rounded-3xl p-6">
           <h3 className="display text-2xl">Manual application</h3>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            Use this if a Google Form response needs to be entered by hand.
-          </p>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {(
               [
@@ -195,7 +203,16 @@ export function BiddingBoard() {
           </div>
         ) : (
           visible.map((app, i) => {
-            const appBids = bids.filter((b) => b.applicationId === app.id);
+            const appBids = bids.filter(
+              (b) => b.applicationId === app.id && b.status === "active",
+            );
+            const myBid = bids.find(
+              (b) =>
+                b.applicationId === app.id &&
+                isMine(b, me) &&
+                b.status !== "withdrawn",
+            );
+
             return (
               <article
                 key={app.id}
@@ -205,6 +222,11 @@ export function BiddingBoard() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
+                      {app.formNumber != null ? (
+                        <span className="rounded-full bg-[var(--ink)] px-2.5 py-1 text-xs font-semibold text-white">
+                          #{app.formNumber}
+                        </span>
+                      ) : null}
                       <h3 className="display text-2xl md:text-3xl">
                         {app.nameAndGrade}
                       </h3>
@@ -212,18 +234,17 @@ export function BiddingBoard() {
                         className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] ${
                           app.status === "open"
                             ? "bg-[rgba(196,69,105,0.12)] text-[var(--rose-deep)]"
-                            : app.status === "awarded"
+                            : app.status === "completed"
                               ? "bg-[rgba(184,146,58,0.18)] text-[var(--ink)]"
                               : "bg-[var(--mist)] text-[var(--ink-soft)]"
                         }`}
                       >
                         {app.status}
                       </span>
-                      <span className="rounded-full bg-[var(--mist)] px-2.5 py-1 text-xs font-medium text-[var(--ink-soft)]">
-                        {app.source === "google-form" ? "Google Form" : "Manual"}
-                      </span>
                     </div>
-                    <p className="mt-1 text-[var(--ink-soft)]">{app.schoolTownState}</p>
+                    <p className="mt-1 text-[var(--ink-soft)]">
+                      {app.schoolTownState}
+                    </p>
                     <p className="mt-1 text-xs text-[var(--ink-soft)]">
                       Submitted{" "}
                       {format(parseISO(app.submittedAt), "MMM d, yyyy · h:mm a")}
@@ -266,70 +287,68 @@ export function BiddingBoard() {
                   </div>
                 </div>
 
-                {app.status === "awarded" ? (
-                  <p className="mt-4 rounded-2xl border border-[var(--line)] px-4 py-3 text-sm">
-                    Awarded to <strong>{app.awardedTo}</strong>
-                    {app.awardedAt
-                      ? ` on ${format(parseISO(app.awardedAt), "MMM d, yyyy")}`
-                      : ""}
-                  </p>
-                ) : null}
-
                 <div className="mt-5 border-t border-[var(--line)] pt-5">
                   <h4 className="font-semibold">
-                    Bids ({appBids.length})
+                    Active bids ({appBids.length})
                   </h4>
                   {appBids.length === 0 ? (
                     <p className="mt-2 text-sm text-[var(--ink-soft)]">
-                      No bids yet. Claim this onboarding if you can support them.
+                      No bids yet.
                     </p>
                   ) : (
-                    <ul className="mt-3 space-y-2">
+                    <ul className="mt-3 flex flex-wrap gap-2">
                       {appBids.map((bid) => (
                         <li
                           key={bid.id}
-                          className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3"
+                          className="rounded-full bg-white px-3 py-1.5 text-sm font-medium"
                         >
-                          <div>
-                            <p className="font-semibold">{bid.bidderName}</p>
-                            <p className="text-sm text-[var(--ink-soft)]">
-                              {bid.note || "No note"}
-                            </p>
-                          </div>
-                          {app.status === "open" ? (
-                            <button
-                              type="button"
-                              className="btn btn-secondary !py-2 text-sm"
-                              onClick={() => void award(app.id, bid.bidderName)}
-                            >
-                              Award onboarding
-                            </button>
-                          ) : null}
+                          {bid.bidderName}
                         </li>
                       ))}
                     </ul>
                   )}
 
                   {app.status === "open" ? (
-                    <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                      <input
-                        className="field"
-                        placeholder="Why you'd be a strong onboarder…"
-                        value={noteByApp[app.id] || ""}
-                        onChange={(e) =>
-                          setNoteByApp((m) => ({
-                            ...m,
-                            [app.id]: e.target.value,
-                          }))
-                        }
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-primary shrink-0"
-                        onClick={() => void placeBid(app.id)}
-                      >
-                        Place bid
-                      </button>
+                    <div className="mt-4">
+                      {!myBid ? (
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => void respond(app.id, "bid")}
+                          >
+                            Bid
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost"
+                            onClick={() => void respond(app.id, "pass")}
+                          >
+                            Not bid
+                          </button>
+                        </div>
+                      ) : myBid.status === "active" ? (
+                        <div className="flex flex-wrap items-center gap-3">
+                          <p className="text-sm font-medium text-[var(--ink)]">
+                            You bid on this call.
+                          </p>
+                          <button
+                            type="button"
+                            className="btn btn-ghost !py-2 text-sm"
+                            onClick={() => void withdraw(app.id, myBid.id)}
+                          >
+                            Withdraw
+                          </button>
+                        </div>
+                      ) : myBid.status === "passed" ? (
+                        <p className="text-sm text-[var(--ink-soft)]">
+                          You chose not to bid.
+                        </p>
+                      ) : myBid.status === "completed" ? (
+                        <p className="text-sm font-medium text-[var(--ink)]">
+                          You marked this onboarding complete.
+                        </p>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>

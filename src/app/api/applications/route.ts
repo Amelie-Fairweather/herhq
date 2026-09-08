@@ -4,6 +4,18 @@ import { readStore, updateStore } from "@/lib/db";
 import type { Application } from "@/lib/types";
 import { uid } from "@/lib/utils";
 
+function normalizeBid(raw: Record<string, unknown>) {
+  return {
+    id: String(raw.id ?? uid()),
+    applicationId: String(raw.applicationId ?? ""),
+    bidderName: String(raw.bidderName ?? ""),
+    bidderUsername: String(raw.bidderUsername ?? ""),
+    status: (raw.status as "active" | "withdrawn" | "completed" | "passed") || "active",
+    createdAt: String(raw.createdAt ?? new Date().toISOString()),
+    completedAt: (raw.completedAt as string | null) ?? null,
+  };
+}
+
 export async function GET() {
   const session = await getSession();
   if (!session) {
@@ -13,17 +25,24 @@ export async function GET() {
   const applications = [...store.applications].sort((a, b) =>
     b.submittedAt.localeCompare(a.submittedAt),
   );
-  const bids = store.bids;
-  return NextResponse.json({ applications, bids });
+  const bids = store.bids.map((b) => normalizeBid(b as unknown as Record<string, unknown>));
+  return NextResponse.json({ applications, bids, me: session });
 }
 
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session) {
+  const secret =
+    request.headers.get("x-ingest-secret") ||
+    new URL(request.url).searchParams.get("secret");
+  const allowSecret = secret === getIngestSecret();
+
+  if (!session && !allowSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as Partial<Application>;
+  const body = (await request.json()) as Partial<Application> & {
+    formNumber?: number;
+  };
   if (!body.nameAndGrade?.trim() || !body.schoolTownState?.trim()) {
     return NextResponse.json(
       { error: "Name/grade and school are required." },
@@ -33,6 +52,7 @@ export async function POST(request: Request) {
 
   const application: Application = {
     id: uid(),
+    formNumber: body.formNumber ?? null,
     nameAndGrade: body.nameAndGrade.trim(),
     schoolTownState: body.schoolTownState.trim(),
     coLeaders: (body.coLeaders ?? "").trim(),
@@ -43,13 +63,22 @@ export async function POST(request: Request) {
     awardedTo: null,
     awardedAt: null,
     submittedAt: new Date().toISOString(),
-    source: "manual",
+    source: allowSecret && !session ? "google-form" : "manual",
   };
 
-  await updateStore((store) => ({
-    ...store,
-    applications: [application, ...store.applications],
-  }));
+  await updateStore((store) => {
+    // Avoid dupes for seeded form numbers
+    if (application.formNumber != null) {
+      const exists = store.applications.some(
+        (a) => a.formNumber === application.formNumber,
+      );
+      if (exists) return store;
+    }
+    return {
+      ...store,
+      applications: [application, ...store.applications],
+    };
+  });
 
   return NextResponse.json({ application }, { status: 201 });
 }
@@ -107,7 +136,6 @@ export async function DELETE(request: Request) {
   const secret =
     request.headers.get("x-ingest-secret") || searchParams.get("secret");
 
-  // Signed-in leaders can delete; ingest secret can wipe everything (cleanup)
   const authed = Boolean(session) || secret === getIngestSecret();
   if (!authed) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
