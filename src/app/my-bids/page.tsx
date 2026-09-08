@@ -8,7 +8,6 @@ const guides = [
     title: "How to onboard your first meeting",
     blurb: "A short walkthrough before you hop on Zoom.",
     cta: "Open guide",
-    accent: "from-[#ffe0f4] to-[#ffc6eb]",
   },
   {
     href: "https://drive.google.com/file/d/1LD5VfDUsPlxIbqV74q6P4HxhBuVV5SW-/view?usp=sharing",
@@ -16,7 +15,6 @@ const guides = [
     title: "Application emails",
     blurb: "Copy-ready notes for reaching out after you bid.",
     cta: "Open guide",
-    accent: "from-[#ffd6f0] to-[#feabef]",
   },
   {
     href: "https://drive.google.com/drive/folders/1CGoRgZqagJMfPTwF6v5LCps0s7Q3gOiF",
@@ -24,9 +22,27 @@ const guides = [
     title: "View our resources",
     blurb: "Pitch drafts, roles, training, and the full HER folder.",
     cta: "Open folder",
-    accent: "from-[#ffccec] to-[#fe4cba]/35",
   },
 ] as const;
+
+function SoftStar({
+  className,
+  fill = "#feabef",
+}: {
+  className?: string;
+  fill?: string;
+}) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className={className}
+      fill={fill}
+    >
+      <path d="M12 1.6l2.7 6.8 7.3.6-5.6 4.8 1.8 7.1L12 17.2l-6.2 3.7 1.8-7.1L2 9l7.3-.6L12 1.6z" />
+    </svg>
+  );
+}
 
 export default function MyBidsPage() {
   return (
@@ -53,13 +69,17 @@ export default function MyBidsPage() {
               className="group relative overflow-hidden rounded-[1.6rem] border border-[var(--line)] bg-white/80 p-4 shadow-[0_12px_32px_rgba(254,76,186,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(254,76,186,0.22)] sm:p-5"
               style={{ animationDelay: `${80 + i * 60}ms` }}
             >
-              <span
-                aria-hidden
-                className={`pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${guide.accent} opacity-80 blur-[2px] transition-transform duration-500 group-hover:scale-125`}
+              <SoftStar
+                className="pointer-events-none absolute -right-3 -top-2 h-24 w-24 rotate-12 opacity-70 transition-transform duration-500 group-hover:rotate-[22deg] group-hover:scale-110"
+                fill="#feabef"
               />
-              <span
-                aria-hidden
-                className={`pointer-events-none absolute -bottom-10 left-8 h-20 w-20 rounded-full bg-gradient-to-tr ${guide.accent} opacity-50 transition-transform duration-500 group-hover:translate-x-2`}
+              <SoftStar
+                className="pointer-events-none absolute -bottom-3 left-6 h-14 w-14 -rotate-12 opacity-45 transition-transform duration-500 group-hover:-rotate-6 group-hover:translate-x-1"
+                fill="#fe4cba"
+              />
+              <SoftStar
+                className="pointer-events-none absolute right-10 top-14 h-7 w-7 rotate-6 opacity-35 transition-transform duration-500 group-hover:scale-125"
+                fill="#ffc6eb"
               />
               <div className="relative">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--rose)]">
