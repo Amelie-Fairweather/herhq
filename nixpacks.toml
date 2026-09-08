@@ -1,0 +1,9 @@
+# Ensure TypeScript/build tools are installed even when NODE_ENV=production
+[phases.install]
+cmds = ["npm ci --include=dev"]
+
+[phases.build]
+cmds = ["mkdir -p data/reports/current data/reports/archive", "npm run build"]
+
+[start]
+cmd = "mkdir -p data/reports/current data/reports/archive && npm run start"

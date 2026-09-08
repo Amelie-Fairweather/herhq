@@ -2,10 +2,13 @@
   "name": "her-hq",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -H 0.0.0.0",
+    "start": "mkdir -p data/reports/current data/reports/archive && next start -H 0.0.0.0",
     "lint": "eslint"
   },
   "dependencies": {
