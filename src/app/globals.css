@@ -4,8 +4,8 @@
 :root {
   --ink: #9b1468;
   --ink-soft: #c41d7a;
-  --mist: #ffd6f5;
-  --paper: #fff0fb;
+  --mist: #ffeef9;
+  --paper: #fff8fc;
   --rose: #fe4cba;
   --rose-deep: #e243a9;
   --gold: #feabef;
@@ -41,9 +41,9 @@ html {
 
 body {
   background:
-    radial-gradient(1000px 480px at 8% -5%, rgba(254, 76, 186, 0.16), transparent 60%),
-    radial-gradient(900px 420px at 100% 0%, rgba(254, 171, 239, 0.35), transparent 55%),
-    #fff0fb;
+    radial-gradient(1000px 480px at 8% -5%, rgba(254, 76, 186, 0.1), transparent 60%),
+    radial-gradient(900px 420px at 100% 0%, rgba(254, 171, 239, 0.22), transparent 55%),
+    #fff5fb;
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
