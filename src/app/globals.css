@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #0c2340;
-  --ink-soft: #1a3a5c;
-  --mist: #e8eef4;
-  --paper: #f7f9fc;
-  --rose: #c44569;
-  --rose-deep: #9e2f4f;
-  --gold: #b8923a;
-  --line: rgba(12, 35, 64, 0.12);
-  --shadow: 0 18px 50px rgba(12, 35, 64, 0.08);
+  --ink: #8f1d4a;
+  --ink-soft: #b83266;
+  --mist: #fde8f0;
+  --paper: #fff6f9;
+  --rose: #ec4899;
+  --rose-deep: #db2777;
+  --gold: #f9a8d4;
+  --line: rgba(143, 29, 74, 0.14);
+  --shadow: 0 18px 50px rgba(190, 24, 93, 0.1);
   --background: var(--paper);
   --foreground: var(--ink);
 }
@@ -38,9 +38,9 @@ html {
 
 body {
   background:
-    radial-gradient(1200px 500px at 10% -10%, rgba(196, 69, 105, 0.08), transparent 55%),
-    radial-gradient(900px 420px at 100% 0%, rgba(184, 146, 58, 0.1), transparent 50%),
-    linear-gradient(180deg, #f4f7fb 0%, var(--paper) 40%, #eef3f8 100%);
+    radial-gradient(1200px 500px at 10% -10%, rgba(236, 72, 153, 0.18), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(249, 168, 212, 0.28), transparent 50%),
+    linear-gradient(180deg, #fff0f5 0%, var(--paper) 40%, #ffe4ef 100%);
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
@@ -52,10 +52,10 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(12, 35, 64, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(12, 35, 64, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(190, 24, 93, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(190, 24, 93, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 85%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 85%);
   z-index: 0;
 }
 
@@ -82,7 +82,7 @@ select {
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--line);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow);
@@ -110,7 +110,7 @@ select {
 .btn-primary {
   background: var(--rose);
   color: white;
-  box-shadow: 0 10px 24px rgba(196, 69, 105, 0.28);
+  box-shadow: 0 10px 24px rgba(236, 72, 153, 0.35);
 }
 
 .btn-primary:hover {
@@ -139,8 +139,8 @@ select {
 }
 
 .field:focus {
-  border-color: rgba(196, 69, 105, 0.55);
-  box-shadow: 0 0 0 3px rgba(196, 69, 105, 0.12);
+  border-color: rgba(236, 72, 153, 0.65);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.16);
 }
 
 .label {

@@ -53,7 +53,7 @@ export default function LoginPage() {
           <h1 className="display mt-3 max-w-xl text-5xl leading-[1.05] md:text-6xl">
             Her Education Required
           </h1>
-          <p className="mt-5 max-w-md text-lg text-white/80">
+          <p className="mt-5 max-w-md text-lg text-white/90">
             Leadership HQ — each person gets their own account. No external
             login services, just local usernames for the team.
           </p>
