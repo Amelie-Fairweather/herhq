@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { AppShell } from "@/components/AppShell";
+import { SoftStar } from "@/components/SoftStar";
 import { getSession } from "@/lib/auth";
 import { readStore } from "@/lib/db";
 import { countCurrentWeekReports } from "@/lib/reports";
@@ -72,7 +73,7 @@ export default async function HomePage() {
             style={{ animationDelay: `${80 + i * 60}ms` }}
           >
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ink-soft)] sm:text-xs sm:tracking-[0.16em]">
-              <span className="live-dot" />
+              <SoftStar className="h-3.5 w-3.5 shrink-0" fill="#fe4cba" />
               {card.label}
             </div>
             <p className="display mt-3 text-4xl text-[var(--ink)] sm:mt-4 sm:text-5xl">{card.value}</p>
