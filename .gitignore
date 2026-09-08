@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local HQ data (accounts, apps, reports) — keep folder structure only
+/data/users.json
+/data/store.json
+/data/reports/current/**
+/data/reports/archive/**
+!/data/reports/current/.gitkeep
+!/data/reports/archive/.gitkeep

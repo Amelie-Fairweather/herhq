@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HER Leadership HQ
 
-## Getting Started
+Internal platform for [Her Education Required](https://hereducation.org) leadership: shared calendar, onboarding bids from the registration form, and weekly self reports.
 
-First, run the development server:
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Accounts (no Supabase / no cloud auth)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Each leader creates their own username + password on the login page (**Create account**). Accounts are stored locally in `data/users.json` with hashed passwords.
 
-## Learn More
+Optional form ingest secret in `.env.local`:
 
-To learn more about Next.js, take a look at the following resources:
+```
+INGEST_SECRET=your-form-webhook-secret
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Shared calendar** — any signed-in leader can post events.
+- **Onboarding bids** — applications appear as cards; leaders bid to onboard them.
+- **Weekly self reports** — saved as JSON files under `data/reports/`:
+  - `current/week-of-YYYY-MM-DD/` — active week(s)
+  - `archive/week-of-YYYY-MM-DD/` — automatically moved here once a week ends
+  - Browse archived weeks on the reports page under **Archive by week**
 
-## Deploy on Vercel
+## Connect the Google Form
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Registration form: [HER Education Required registration form](https://docs.google.com/forms/d/1uCjsP-O7k6S3d_As3J2pampyR4RJQ0K7z5-txtg6EfA/viewform)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Open the form’s linked responses sheet (or Extensions → Apps Script on the form).
+2. Paste `scripts/google-form-apps-script.js`.
+3. Set `INGEST_URL` to your deployed HQ URL + `/api/ingest`.
+4. Match `INGEST_SECRET` to `.env.local`.
+5. Add an **On form submit** trigger for `onFormSubmit`.
+
+## Deploy notes
+
+Data lives on disk under `data/`. Works well on an always-on host (Railway, Render, Fly, a VPS).
