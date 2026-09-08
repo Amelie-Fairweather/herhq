@@ -42,7 +42,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="shell relative flex min-h-screen items-center justify-center bg-[#fff5f9] px-5 py-12">
+    <div className="shell relative flex min-h-screen items-center justify-center bg-[#feabef] px-5 py-12">
       <div className="relative z-10 grid w-full max-w-5xl gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-center">
         <div className="fade-up">
           <Image
@@ -51,15 +51,15 @@ export default function LoginPage() {
             width={160}
             height={160}
             priority
-            className="mb-5 h-28 w-28 rounded-2xl object-cover shadow-md ring-1 ring-[#4a1830]/15 md:h-36 md:w-36"
+            className="mb-5 h-28 w-28 rounded-2xl object-cover shadow-md ring-2 ring-[#fe4cba]/40 md:h-36 md:w-36"
           />
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#e85a98]">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#fe4cba]">
             hereducation.org
           </p>
-          <h1 className="display mt-3 max-w-xl text-5xl leading-[1.05] text-[#4a1830] md:text-6xl">
+          <h1 className="display mt-3 max-w-xl text-5xl leading-[1.05] text-[#9b1468] md:text-6xl">
             Her Education Required
           </h1>
-          <p className="mt-5 max-w-md text-lg text-[#7a3555]">
+          <p className="mt-5 max-w-md text-lg text-[#9b1468]/90">
             Leadership HQ — each person gets their own account. No external
             login services, just local usernames for the team.
           </p>
