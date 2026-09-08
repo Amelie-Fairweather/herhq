@@ -1,9 +1,6 @@
 import { promises as fs } from "fs";
-import path from "path";
 import type { Store } from "./types";
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const STORE_PATH = path.join(DATA_DIR, "store.json");
+import { getDataDir, getStorePath } from "./paths";
 
 const emptyStore = (): Store => ({
   events: [],
@@ -12,17 +9,17 @@ const emptyStore = (): Store => ({
 });
 
 async function ensureStore(): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.mkdir(getDataDir(), { recursive: true });
   try {
-    await fs.access(STORE_PATH);
+    await fs.access(getStorePath());
   } catch {
-    await fs.writeFile(STORE_PATH, JSON.stringify(emptyStore(), null, 2));
+    await fs.writeFile(getStorePath(), JSON.stringify(emptyStore(), null, 2));
   }
 }
 
 export async function readStore(): Promise<Store> {
   await ensureStore();
-  const raw = await fs.readFile(STORE_PATH, "utf8");
+  const raw = await fs.readFile(getStorePath(), "utf8");
   try {
     const parsed = JSON.parse(raw) as Store;
     return {
@@ -37,7 +34,7 @@ export async function readStore(): Promise<Store> {
 
 export async function writeStore(store: Store): Promise<void> {
   await ensureStore();
-  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2));
+  await fs.writeFile(getStorePath(), JSON.stringify(store, null, 2));
 }
 
 export async function updateStore(

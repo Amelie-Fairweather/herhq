@@ -1,9 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
 import type { WeeklyReport } from "./types";
+import { getReportsRoot } from "./paths";
 import { mondayOf, uid } from "./utils";
 
-const REPORTS_ROOT = path.join(process.cwd(), "data", "reports");
+const REPORTS_ROOT = getReportsRoot();
 const CURRENT_DIR = path.join(REPORTS_ROOT, "current");
 const ARCHIVE_DIR = path.join(REPORTS_ROOT, "archive");
 

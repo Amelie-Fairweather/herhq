@@ -14,12 +14,13 @@ export async function POST(request: Request) {
   const username = body.username?.trim() ?? "";
   const password = body.password ?? "";
 
-  const user = await authenticateUser(username, password);
+  const { user, reason } = await authenticateUser(username, password);
   if (!user) {
-    return NextResponse.json(
-      { error: "Invalid username or password." },
-      { status: 401 },
-    );
+    const error =
+      reason === "missing"
+        ? "No account found for that username. Use Create account — Railway redeploys clear logins until a volume is attached."
+        : "Invalid username or password.";
+    return NextResponse.json({ error }, { status: 401 });
   }
 
   const response = NextResponse.json({

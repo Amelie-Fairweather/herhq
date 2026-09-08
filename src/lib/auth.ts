@@ -1,10 +1,7 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import { promises as fs } from "fs";
-import path from "path";
 import { cookies } from "next/headers";
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const USERS_PATH = path.join(DATA_DIR, "users.json");
+import { getDataDir, getUsersPath } from "./paths";
 
 const SESSION_COOKIE = "her_hq_session";
 const USER_COOKIE = "her_hq_user";
@@ -50,18 +47,18 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 async function ensureUsersFile(): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.mkdir(getDataDir(), { recursive: true });
   try {
-    await fs.access(USERS_PATH);
+    await fs.access(getUsersPath());
   } catch {
     const empty: UsersFile = { users: [] };
-    await fs.writeFile(USERS_PATH, JSON.stringify(empty, null, 2));
+    await fs.writeFile(getUsersPath(), JSON.stringify(empty, null, 2));
   }
 }
 
 export async function readUsers(): Promise<UserRecord[]> {
   await ensureUsersFile();
-  const raw = await fs.readFile(USERS_PATH, "utf8");
+  const raw = await fs.readFile(getUsersPath(), "utf8");
   try {
     const parsed = JSON.parse(raw) as UsersFile;
     return parsed.users ?? [];
@@ -72,7 +69,7 @@ export async function readUsers(): Promise<UserRecord[]> {
 
 async function writeUsers(users: UserRecord[]): Promise<void> {
   await ensureUsersFile();
-  await fs.writeFile(USERS_PATH, JSON.stringify({ users }, null, 2));
+  await fs.writeFile(getUsersPath(), JSON.stringify({ users }, null, 2));
 }
 
 export function normalizeUsername(username: string): string {
@@ -84,8 +81,24 @@ export function isValidUsername(username: string): boolean {
 }
 
 export async function findUser(username: string): Promise<UserRecord | null> {
+  await ensureBootstrapUser();
   const users = await readUsers();
   return users.find((u) => u.username === normalizeUsername(username)) ?? null;
+}
+
+/** Create bootstrap admin from env if the users file is empty. */
+export async function ensureBootstrapUser(): Promise<void> {
+  const username = process.env.BOOTSTRAP_USERNAME?.trim();
+  const password = process.env.BOOTSTRAP_PASSWORD?.trim();
+  const displayName =
+    process.env.BOOTSTRAP_DISPLAY_NAME?.trim() || username || "Admin";
+  if (!username || !password) return;
+
+  const users = await readUsers();
+  const existing = users.find((u) => u.username === normalizeUsername(username));
+  if (existing) return;
+
+  await createUser({ username, displayName, password });
 }
 
 export async function createUser(input: {
@@ -130,14 +143,47 @@ export async function createUser(input: {
   return { user };
 }
 
+export async function setUserPassword(
+  username: string,
+  password: string,
+  displayName?: string,
+): Promise<{ user?: UserRecord; error?: string }> {
+  if (password.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
+  const normalized = normalizeUsername(username);
+  const users = await readUsers();
+  const idx = users.findIndex((u) => u.username === normalized);
+
+  if (idx === -1) {
+    return createUser({
+      username: normalized,
+      displayName: displayName?.trim() || normalized,
+      password,
+    });
+  }
+
+  const next = [...users];
+  next[idx] = {
+    ...next[idx],
+    passwordHash: createPasswordHash(password),
+    displayName: displayName?.trim() || next[idx].displayName,
+  };
+  await writeUsers(next);
+  return { user: next[idx] };
+}
+
 export async function authenticateUser(
   username: string,
   password: string,
-): Promise<UserRecord | null> {
+): Promise<{ user: UserRecord | null; reason?: "missing" | "bad_password" }> {
+  await ensureBootstrapUser();
   const user = await findUser(username);
-  if (!user) return null;
-  if (!verifyPassword(password, user.passwordHash)) return null;
-  return user;
+  if (!user) return { user: null, reason: "missing" };
+  if (!verifyPassword(password, user.passwordHash)) {
+    return { user: null, reason: "bad_password" };
+  }
+  return { user };
 }
 
 export async function getSession(): Promise<Session | null> {
