@@ -311,24 +311,57 @@ export function BiddingBoard() {
                 </div>
 
                 <div className="mt-5 border-t border-[var(--line)] pt-5">
-                  <h4 className="font-semibold">
-                    Active bids ({appBids.length})
-                  </h4>
-                  {appBids.length === 0 ? (
-                    <p className="mt-2 text-sm text-[var(--ink-soft)]">
-                      No bids yet.
-                    </p>
+                  {app.status === "completed" ? (
+                    <>
+                      <h4 className="font-semibold">Completed by</h4>
+                      <p className="mt-2 text-sm text-[var(--ink)]">
+                        <strong>{app.awardedTo || "Unknown"}</strong>
+                        {app.awardedAt
+                          ? ` on ${format(parseISO(app.awardedAt), "MMM d, yyyy · h:mm a")}`
+                          : ""}
+                      </p>
+                      {(() => {
+                        const completedBids = bids.filter(
+                          (b) =>
+                            b.applicationId === app.id &&
+                            b.status === "completed",
+                        );
+                        return completedBids.length > 0 ? (
+                          <ul className="mt-3 flex flex-wrap gap-2">
+                            {completedBids.map((bid) => (
+                              <li
+                                key={bid.id}
+                                className="rounded-full bg-white px-3 py-1.5 text-sm font-medium"
+                              >
+                                {bid.bidderName}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null;
+                      })()}
+                    </>
                   ) : (
-                    <ul className="mt-3 flex flex-wrap gap-2">
-                      {appBids.map((bid) => (
-                        <li
-                          key={bid.id}
-                          className="rounded-full bg-white px-3 py-1.5 text-sm font-medium"
-                        >
-                          {bid.bidderName}
-                        </li>
-                      ))}
-                    </ul>
+                    <>
+                      <h4 className="font-semibold">
+                        Active bids ({appBids.length})
+                      </h4>
+                      {appBids.length === 0 ? (
+                        <p className="mt-2 text-sm text-[var(--ink-soft)]">
+                          No bids yet.
+                        </p>
+                      ) : (
+                        <ul className="mt-3 flex flex-wrap gap-2">
+                          {appBids.map((bid) => (
+                            <li
+                              key={bid.id}
+                              className="rounded-full bg-white px-3 py-1.5 text-sm font-medium"
+                            >
+                              {bid.bidderName}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
                   )}
 
                   {app.status === "open" ? (

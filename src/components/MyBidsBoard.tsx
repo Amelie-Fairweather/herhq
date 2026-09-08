@@ -165,6 +165,11 @@ export function MyBidsBoard() {
                         ? ` · completed ${format(parseISO(bid.completedAt), "MMM d, yyyy")}`
                         : ""}
                     </p>
+                    {bid.status === "completed" ? (
+                      <p className="mt-2 text-sm font-semibold text-[var(--ink)]">
+                        Completed by {bid.bidderName}
+                      </p>
+                    ) : null}
                   </div>
                   {bid.status === "active" ? (
                     <div className="flex w-full flex-wrap gap-2 sm:w-auto">
