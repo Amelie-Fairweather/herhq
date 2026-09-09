@@ -34,11 +34,11 @@ export default function MyBidsPage() {
           My bids
         </p>
         <h2 className="display mt-2 text-3xl text-[var(--ink)] sm:text-4xl">
-          Calls you claimed.
+          Your onboarding bids and to-dos.
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-[var(--ink-soft)] sm:text-base">
-          Track onboardings you bid on. Mark Complete when the call is done, or
-          Withdraw if you can no longer take it.
+          Switch between chapter onboarding bids and idea pledges. Mark Complete
+          when you finish, or Withdraw if you can no longer take it.
         </p>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -3,39 +3,62 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import type { Application, Bid } from "@/lib/types";
+import { ideaCategoryLabel, ideaScopeLabel } from "@/lib/ideas";
+import type { Application, Bid, Idea, IdeaPledge } from "@/lib/types";
 
 type Me = { username: string; name: string };
+type Section = "onboarding" | "todos";
+type StatusTab = "active" | "completed";
 
 export function MyBidsBoard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [bids, setBids] = useState<Bid[]>([]);
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [pledges, setPledges] = useState<IdeaPledge[]>([]);
   const [me, setMe] = useState<Me | null>(null);
   const [error, setError] = useState("");
-  const [tab, setTab] = useState<"active" | "completed">("active");
+  const [section, setSection] = useState<Section>("onboarding");
+  const [tab, setTab] = useState<StatusTab>("active");
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/applications");
-    const data = (await res.json()) as {
+    const [appsRes, ideasRes] = await Promise.all([
+      fetch("/api/applications"),
+      fetch("/api/ideas"),
+    ]);
+    const appsData = (await appsRes.json()) as {
       applications?: Application[];
       bids?: Bid[];
       me?: Me;
       error?: string;
     };
-    if (!res.ok) {
-      setError(data.error || "Failed to load bids");
+    const ideasData = (await ideasRes.json()) as {
+      ideas?: Idea[];
+      pledges?: IdeaPledge[];
+      me?: Me;
+      error?: string;
+    };
+
+    if (!appsRes.ok) {
+      setError(appsData.error || "Failed to load onboarding bids");
       return;
     }
-    setApplications(data.applications || []);
-    setBids(data.bids || []);
-    setMe(data.me || null);
+    if (!ideasRes.ok) {
+      setError(ideasData.error || "Failed to load to-dos");
+      return;
+    }
+
+    setApplications(appsData.applications || []);
+    setBids(appsData.bids || []);
+    setIdeas(ideasData.ideas || []);
+    setPledges(ideasData.pledges || []);
+    setMe(appsData.me || ideasData.me || null);
   }, []);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const mine = useMemo(() => {
+  const onboarding = useMemo(() => {
     if (!me) return [];
     return bids
       .filter(
@@ -51,11 +74,32 @@ export function MyBidsBoard() {
       .sort((a, b) => b.bid.createdAt.localeCompare(a.bid.createdAt));
   }, [applications, bids, me]);
 
-  const visible = mine.filter((row) =>
+  const todos = useMemo(() => {
+    if (!me) return [];
+    return pledges
+      .filter(
+        (p) =>
+          (p.bidderUsername === me.username || p.bidderName === me.name) &&
+          (p.status === "active" || p.status === "completed"),
+      )
+      .map((pledge) => ({
+        pledge,
+        idea: ideas.find((i) => i.id === pledge.ideaId) || null,
+      }))
+      .filter((row) => row.idea)
+      .sort((a, b) => b.pledge.createdAt.localeCompare(a.pledge.createdAt));
+  }, [ideas, pledges, me]);
+
+  const visibleOnboarding = onboarding.filter((row) =>
     tab === "active" ? row.bid.status === "active" : row.bid.status === "completed",
   );
+  const visibleTodos = todos.filter((row) =>
+    tab === "active"
+      ? row.pledge.status === "active"
+      : row.pledge.status === "completed",
+  );
 
-  async function withdraw(applicationId: string, bidId: string) {
+  async function withdrawBid(applicationId: string, bidId: string) {
     setError("");
     const res = await fetch(`/api/applications/${applicationId}/bids`, {
       method: "PATCH",
@@ -70,12 +114,42 @@ export function MyBidsBoard() {
     await load();
   }
 
-  async function complete(applicationId: string, bidId: string) {
+  async function completeBid(applicationId: string, bidId: string) {
     setError("");
     const res = await fetch(`/api/applications/${applicationId}/bids`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "complete", bidId }),
+    });
+    const data = (await res.json()) as { error?: string };
+    if (!res.ok) {
+      setError(data.error || "Could not complete");
+      return;
+    }
+    await load();
+  }
+
+  async function withdrawPledge(ideaId: string, pledgeId: string) {
+    setError("");
+    const res = await fetch(`/api/ideas/${ideaId}/pledges`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "withdraw", pledgeId }),
+    });
+    const data = (await res.json()) as { error?: string };
+    if (!res.ok) {
+      setError(data.error || "Could not withdraw");
+      return;
+    }
+    await load();
+  }
+
+  async function completePledge(ideaId: string, pledgeId: string) {
+    setError("");
+    const res = await fetch(`/api/ideas/${ideaId}/pledges`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "complete", pledgeId }),
     });
     const data = (await res.json()) as { error?: string };
     if (!res.ok) {
@@ -91,7 +165,28 @@ export function MyBidsBoard() {
         <button
           type="button"
           className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
-            tab === "active" ? "btn-secondary" : "btn-ghost"
+            section === "onboarding" ? "btn-secondary" : "btn-ghost"
+          }`}
+          onClick={() => setSection("onboarding")}
+        >
+          Onboarding bids
+        </button>
+        <button
+          type="button"
+          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
+            section === "todos" ? "btn-secondary" : "btn-ghost"
+          }`}
+          onClick={() => setSection("todos")}
+        >
+          To-dos
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
+            tab === "active" ? "btn-primary" : "btn-ghost"
           }`}
           onClick={() => setTab("active")}
         >
@@ -100,7 +195,7 @@ export function MyBidsBoard() {
         <button
           type="button"
           className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
-            tab === "completed" ? "btn-secondary" : "btn-ghost"
+            tab === "completed" ? "btn-primary" : "btn-ghost"
           }`}
           onClick={() => setTab("completed")}
         >
@@ -114,76 +209,180 @@ export function MyBidsBoard() {
         </p>
       ) : null}
 
-      {visible.length === 0 ? (
+      {section === "onboarding" ? (
+        visibleOnboarding.length === 0 ? (
+          <div className="panel rounded-3xl p-8 text-center">
+            <p className="display text-2xl">
+              {tab === "active" ? "No active onboarding bids" : "No completed calls yet"}
+            </p>
+            <p className="mt-2 text-sm text-[var(--ink-soft)]">
+              {tab === "active" ? (
+                <>
+                  Go to{" "}
+                  <Link href="/bidding" className="font-semibold text-[var(--rose)]">
+                    Onboarding bids
+                  </Link>{" "}
+                  and click Bid on a call.
+                </>
+              ) : (
+                "Completed onboardings will show up here."
+              )}
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {visibleOnboarding.map(({ bid, app }, i) =>
+              app ? (
+                <article
+                  key={bid.id}
+                  className="panel fade-up rounded-3xl p-4 sm:p-6"
+                  style={{ animationDelay: `${i * 40}ms` }}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {app.formNumber != null ? (
+                          <span className="rounded-full bg-[var(--ink)] px-2.5 py-1 text-xs font-semibold text-white">
+                            #{app.formNumber}
+                          </span>
+                        ) : null}
+                        <h3 className="display text-2xl">{app.nameAndGrade}</h3>
+                        <span className="rounded-full bg-[var(--mist)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ink-soft)]">
+                          {bid.status}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[var(--ink-soft)]">
+                        {app.schoolTownState}
+                      </p>
+                      <p className="mt-1 text-xs text-[var(--ink-soft)]">
+                        Bid{" "}
+                        {format(parseISO(bid.createdAt), "MMM d, yyyy · h:mm a")}
+                        {bid.completedAt
+                          ? ` · completed ${format(parseISO(bid.completedAt), "MMM d, yyyy")}`
+                          : ""}
+                      </p>
+                      {bid.status === "completed" ? (
+                        <p className="mt-2 text-sm font-semibold text-[var(--ink)]">
+                          Completed by {bid.bidderName}
+                        </p>
+                      ) : null}
+                    </div>
+                    {bid.status === "active" ? (
+                      <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+                        <button
+                          type="button"
+                          className="btn btn-primary !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
+                          onClick={() => void completeBid(app.id, bid.id)}
+                        >
+                          Complete
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-ghost !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
+                          onClick={() => void withdrawBid(app.id, bid.id)}
+                        >
+                          Withdraw
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+                    <div>
+                      <p className="label">Contact</p>
+                      <p>{app.contact || "—"}</p>
+                    </div>
+                    <div>
+                      <p className="label">Co-leaders</p>
+                      <p>{app.coLeaders || "None listed"}</p>
+                    </div>
+                    <div>
+                      <p className="label">Why start a HER</p>
+                      <p className="whitespace-pre-wrap">{app.whyStart || "—"}</p>
+                    </div>
+                    <div>
+                      <p className="label">Meeting availability</p>
+                      <p className="whitespace-pre-wrap">
+                        {app.meetingAvailability || "—"}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              ) : null,
+            )}
+          </div>
+        )
+      ) : visibleTodos.length === 0 ? (
         <div className="panel rounded-3xl p-8 text-center">
           <p className="display text-2xl">
-            {tab === "active" ? "No active bids" : "No completed calls yet"}
+            {tab === "active" ? "No active to-dos" : "No completed to-dos yet"}
           </p>
           <p className="mt-2 text-sm text-[var(--ink-soft)]">
             {tab === "active" ? (
               <>
                 Go to{" "}
-                <Link href="/bidding" className="font-semibold text-[var(--rose)]">
-                  Onboarding bids
+                <Link href="/ideas" className="font-semibold text-[var(--rose)]">
+                  Idea proposals
                 </Link>{" "}
-                and click Bid on a call.
+                and click Pledge to help.
               </>
             ) : (
-              "Completed onboardings will show up here."
+              "Completed idea pledges will show up here."
             )}
           </p>
         </div>
       ) : (
         <div className="grid gap-4">
-          {visible.map(({ bid, app }, i) =>
-            app ? (
+          {visibleTodos.map(({ pledge, idea }, i) =>
+            idea ? (
               <article
-                key={bid.id}
+                key={pledge.id}
                 className="panel fade-up rounded-3xl p-4 sm:p-6"
                 style={{ animationDelay: `${i * 40}ms` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      {app.formNumber != null ? (
-                        <span className="rounded-full bg-[var(--ink)] px-2.5 py-1 text-xs font-semibold text-white">
-                          #{app.formNumber}
-                        </span>
-                      ) : null}
-                      <h3 className="display text-2xl">{app.nameAndGrade}</h3>
+                      <span className="rounded-full bg-[var(--ink)] px-2.5 py-1 text-xs font-semibold text-white">
+                        {ideaCategoryLabel(idea.category)}
+                      </span>
                       <span className="rounded-full bg-[var(--mist)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ink-soft)]">
-                        {bid.status}
+                        {ideaScopeLabel(idea.scope)}
+                      </span>
+                      <span className="rounded-full bg-[var(--mist)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ink-soft)]">
+                        {pledge.status}
                       </span>
                     </div>
-                    <p className="mt-1 text-[var(--ink-soft)]">
-                      {app.schoolTownState}
+                    <h3 className="display mt-2 text-2xl">{idea.title}</h3>
+                    <p className="mt-1 text-sm text-[var(--ink-soft)]">
+                      Posted by {idea.createdBy} · Slack {idea.slackUsername}
                     </p>
                     <p className="mt-1 text-xs text-[var(--ink-soft)]">
-                      Bid{" "}
-                      {format(parseISO(bid.createdAt), "MMM d, yyyy · h:mm a")}
-                      {bid.completedAt
-                        ? ` · completed ${format(parseISO(bid.completedAt), "MMM d, yyyy")}`
+                      Pledged{" "}
+                      {format(parseISO(pledge.createdAt), "MMM d, yyyy · h:mm a")}
+                      {pledge.completedAt
+                        ? ` · completed ${format(parseISO(pledge.completedAt), "MMM d, yyyy")}`
                         : ""}
                     </p>
-                    {bid.status === "completed" ? (
+                    {pledge.status === "completed" ? (
                       <p className="mt-2 text-sm font-semibold text-[var(--ink)]">
-                        Completed by {bid.bidderName}
+                        Completed by {pledge.bidderName}
                       </p>
                     ) : null}
                   </div>
-                  {bid.status === "active" ? (
+                  {pledge.status === "active" ? (
                     <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                       <button
                         type="button"
                         className="btn btn-primary !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
-                        onClick={() => void complete(app.id, bid.id)}
+                        onClick={() => void completePledge(idea.id, pledge.id)}
                       >
                         Complete
                       </button>
                       <button
                         type="button"
                         className="btn btn-ghost !min-h-10 flex-1 !py-2 text-sm sm:flex-none"
-                        onClick={() => void withdraw(app.id, bid.id)}
+                        onClick={() => void withdrawPledge(idea.id, pledge.id)}
                       >
                         Withdraw
                       </button>
@@ -191,26 +390,13 @@ export function MyBidsBoard() {
                   ) : null}
                 </div>
 
-                <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-                  <div>
-                    <p className="label">Contact</p>
-                    <p>{app.contact || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="label">Co-leaders</p>
-                    <p>{app.coLeaders || "None listed"}</p>
-                  </div>
-                  <div>
-                    <p className="label">Why start a HER</p>
-                    <p className="whitespace-pre-wrap">{app.whyStart || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="label">Meeting availability</p>
-                    <p className="whitespace-pre-wrap">
-                      {app.meetingAvailability || "—"}
-                    </p>
-                  </div>
-                </div>
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed">
+                  {idea.description}
+                </p>
+                <p className="mt-3 text-sm text-[var(--ink-soft)]">
+                  Needs {idea.membersNeeded} member
+                  {idea.membersNeeded === 1 ? "" : "s"}
+                </p>
               </article>
             ) : null,
           )}

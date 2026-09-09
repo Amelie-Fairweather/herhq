@@ -6,6 +6,8 @@ const emptyStore = (): Store => ({
   events: [],
   applications: [],
   bids: [],
+  ideas: [],
+  ideaPledges: [],
 });
 
 async function ensureStore(): Promise<void> {
@@ -29,6 +31,8 @@ export async function readStore(): Promise<Store> {
         meetingAvailability: app.meetingAvailability ?? "",
       })),
       bids: parsed.bids ?? [],
+      ideas: parsed.ideas ?? [],
+      ideaPledges: parsed.ideaPledges ?? [],
     };
   } catch {
     return emptyStore();

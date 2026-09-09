@@ -17,6 +17,7 @@ export default async function HomePage() {
     .sort((a, b) => a.start.localeCompare(b.start))
     .slice(0, 4);
   const openApps = store.applications.filter((a) => a.status === "open");
+  const openIdeas = store.ideas.filter((i) => i.status === "open");
   const week = mondayOf();
   const reportsThisWeek = await countCurrentWeekReports();
 
@@ -39,13 +40,14 @@ export default async function HomePage() {
             Organize the movement.
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-[var(--ink-soft)] sm:text-base">
-            Post shared events, bid to onboard new chapter leaders from the
-            registration form, and file your weekly self report — all in one place.
+            Post shared events, bid to onboard new chapter leaders, pitch ideas
+            the team can pledge on, and file your weekly self report — all in one
+            place.
           </p>
         </div>
       </section>
 
-      <section className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
+      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4">
         {[
           {
             href: "/calendar",
@@ -58,6 +60,12 @@ export default async function HomePage() {
             label: "Open applications",
             value: String(openApps.length),
             hint: "ready for bids",
+          },
+          {
+            href: "/ideas",
+            label: "Open ideas",
+            value: String(openIdeas.length),
+            hint: "looking for helpers",
           },
           {
             href: "/reports",
