@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import { withWeeklyHerCall } from "./calendar";
 import type { Store } from "./types";
 import { getDataDir, getStorePath } from "./paths";
 
@@ -24,8 +25,9 @@ export async function readStore(): Promise<Store> {
   const raw = await fs.readFile(getStorePath(), "utf8");
   try {
     const parsed = JSON.parse(raw) as Store;
-    return {
-      events: parsed.events ?? [],
+    const events = withWeeklyHerCall(parsed.events ?? []);
+    const store: Store = {
+      events,
       applications: (parsed.applications ?? []).map((app) => ({
         ...app,
         meetingAvailability: app.meetingAvailability ?? "",
@@ -34,8 +36,16 @@ export async function readStore(): Promise<Store> {
       ideas: parsed.ideas ?? [],
       ideaPledges: parsed.ideaPledges ?? [],
     };
+    // Persist the seeded weekly call once so it survives and can be edited/removed.
+    if (events.length !== (parsed.events ?? []).length) {
+      await writeStore(store);
+    }
+    return store;
   } catch {
-    return emptyStore();
+    const store = emptyStore();
+    store.events = withWeeklyHerCall([]);
+    await writeStore(store);
+    return store;
   }
 }
 

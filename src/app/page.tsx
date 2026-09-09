@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
+import { addDays, format, parseISO } from "date-fns";
 import { AppShell } from "@/components/AppShell";
 import { SoftStar } from "@/components/SoftStar";
+import { expandEvents } from "@/lib/calendar";
 import { getSession } from "@/lib/auth";
 import { readStore } from "@/lib/db";
 import { countCurrentWeekReports } from "@/lib/reports";
@@ -11,9 +12,8 @@ import { formatWeekLabel, mondayOf } from "@/lib/utils";
 export default async function HomePage() {
   const session = await getSession();
   const store = await readStore();
-  const now = new Date().toISOString();
-  const upcoming = store.events
-    .filter((e) => e.start >= now)
+  const now = new Date();
+  const upcoming = expandEvents(store.events, now, addDays(now, 60))
     .sort((a, b) => a.start.localeCompare(b.start))
     .slice(0, 4);
   const openApps = store.applications.filter((a) => a.status === "open");

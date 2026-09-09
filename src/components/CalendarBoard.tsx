@@ -4,15 +4,18 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   addMonths,
   eachDayOfInterval,
+  endOfDay,
   endOfMonth,
   endOfWeek,
   format,
   isSameDay,
   isSameMonth,
   parseISO,
+  startOfDay,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { expandEvents } from "@/lib/calendar";
 import type { CalendarEvent } from "@/lib/types";
 
 export function CalendarBoard() {
@@ -27,6 +30,7 @@ export function CalendarBoard() {
     location: "",
     start: "",
     end: "",
+    weekly: false,
   });
 
   const load = useCallback(async () => {
@@ -52,7 +56,14 @@ export function CalendarBoard() {
     return eachDayOfInterval({ start, end });
   }, [cursor]);
 
-  const dayEvents = events.filter((e) => isSameDay(parseISO(e.start), selected));
+  const visibleEvents = useMemo(() => {
+    if (days.length === 0) return [];
+    return expandEvents(events, startOfDay(days[0]), endOfDay(days[days.length - 1]));
+  }, [days, events]);
+
+  const dayEvents = visibleEvents.filter((e) =>
+    isSameDay(parseISO(e.start), selected),
+  );
 
   async function onCreate(e: FormEvent) {
     e.preventDefault();
@@ -61,9 +72,12 @@ export function CalendarBoard() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...form,
+        title: form.title,
+        description: form.description,
+        location: form.location,
         start: new Date(form.start).toISOString(),
         end: new Date(form.end).toISOString(),
+        recurrence: form.weekly ? "weekly" : "none",
       }),
     });
     const data = (await res.json()) as { error?: string };
@@ -71,7 +85,14 @@ export function CalendarBoard() {
       setError(data.error || "Could not create event");
       return;
     }
-    setForm({ title: "", description: "", location: "", start: "", end: "" });
+    setForm({
+      title: "",
+      description: "",
+      location: "",
+      start: "",
+      end: "",
+      weekly: false,
+    });
     await load();
   }
 
@@ -137,7 +158,9 @@ export function CalendarBoard() {
           {days.map((day) => {
             const inMonth = isSameMonth(day, cursor);
             const active = isSameDay(day, selected);
-            const count = events.filter((e) => isSameDay(parseISO(e.start), day)).length;
+            const count = visibleEvents.filter((e) =>
+              isSameDay(parseISO(e.start), day),
+            ).length;
             return (
               <button
                 key={day.toISOString()}
@@ -172,7 +195,14 @@ export function CalendarBoard() {
                 <li key={event.id} className="rounded-2xl bg-[var(--mist)]/70 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold">{event.title}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold">{event.title}</p>
+                        {event.recurrence === "weekly" ? (
+                          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--rose)]">
+                            Weekly
+                          </span>
+                        ) : null}
+                      </div>
                       <p className="text-sm text-[var(--ink-soft)]">
                         {format(parseISO(event.start), "h:mm a")} –{" "}
                         {format(parseISO(event.end), "h:mm a")}
@@ -183,6 +213,9 @@ export function CalendarBoard() {
                       ) : null}
                       <p className="mt-2 text-xs text-[var(--ink-soft)]">
                         Posted by {event.createdBy}
+                        {event.recurrence === "weekly"
+                          ? " · removing deletes the whole series"
+                          : ""}
                       </p>
                     </div>
                     <button
@@ -245,6 +278,16 @@ export function CalendarBoard() {
                 />
               </div>
             </div>
+            <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink)]">
+              <input
+                type="checkbox"
+                checked={form.weekly}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, weekly: e.target.checked }))
+                }
+              />
+              Repeats weekly
+            </label>
             <div>
               <label className="label" htmlFor="location">
                 Location / link

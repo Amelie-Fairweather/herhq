@@ -7,6 +7,8 @@ export type CalendarEvent = {
   location: string;
   createdBy: string;
   createdAt: string;
+  /** When "weekly", start/end define the first occurrence (and time-of-day). */
+  recurrence?: "none" | "weekly";
 };
 
 export type ApplicationStatus = "open" | "awarded" | "completed" | "archived";
