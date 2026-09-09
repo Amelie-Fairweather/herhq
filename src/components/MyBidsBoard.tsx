@@ -186,7 +186,7 @@ export function MyBidsBoard() {
               Chapter calls
             </span>
             <span className="display mt-1 block text-xl sm:text-2xl">
-              Onboarding bids
+              Onboarding
             </span>
             <span
               className={`mt-1 block text-sm ${
@@ -259,7 +259,7 @@ export function MyBidsBoard() {
                 <>
                   Go to{" "}
                   <Link href="/bidding" className="font-semibold text-[var(--rose)]">
-                    Onboarding bids
+                    Onboarding
                   </Link>{" "}
                   and click Bid on a call.
                 </>
