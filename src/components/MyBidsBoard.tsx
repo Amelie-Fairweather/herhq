@@ -159,30 +159,69 @@ export function MyBidsBoard() {
     await load();
   }
 
+  const onboardingActiveCount = onboarding.filter(
+    (row) => row.bid.status === "active",
+  ).length;
+  const todosActiveCount = todos.filter(
+    (row) => row.pledge.status === "active",
+  ).length;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
-            section === "onboarding" ? "btn-secondary" : "btn-ghost"
-          }`}
-          onClick={() => setSection("onboarding")}
-        >
-          Onboarding bids
-        </button>
-        <button
-          type="button"
-          className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
-            section === "todos" ? "btn-secondary" : "btn-ghost"
-          }`}
-          onClick={() => setSection("todos")}
-        >
-          To-dos
-        </button>
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--rose)] sm:text-xs">
+          What are you looking at?
+        </p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setSection("onboarding")}
+            className={`rounded-2xl border px-4 py-3.5 text-left transition-colors ${
+              section === "onboarding"
+                ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_10px_24px_rgba(155,20,104,0.25)]"
+                : "border-[var(--line)] bg-white/80 text-[var(--ink)] hover:bg-[var(--mist)]"
+            }`}
+          >
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] opacity-80">
+              Chapter calls
+            </span>
+            <span className="display mt-1 block text-xl sm:text-2xl">
+              Onboarding bids
+            </span>
+            <span
+              className={`mt-1 block text-sm ${
+                section === "onboarding" ? "text-white/85" : "text-[var(--ink-soft)]"
+              }`}
+            >
+              {onboardingActiveCount} active
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSection("todos")}
+            className={`rounded-2xl border px-4 py-3.5 text-left transition-colors ${
+              section === "todos"
+                ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_10px_24px_rgba(155,20,104,0.25)]"
+                : "border-[var(--line)] bg-white/80 text-[var(--ink)] hover:bg-[var(--mist)]"
+            }`}
+          >
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] opacity-80">
+              Idea pledges
+            </span>
+            <span className="display mt-1 block text-xl sm:text-2xl">To-dos</span>
+            <span
+              className={`mt-1 block text-sm ${
+                section === "todos" ? "text-white/85" : "text-[var(--ink-soft)]"
+              }`}
+            >
+              {todosActiveCount} active
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="mr-1 text-sm font-semibold text-[var(--ink-soft)]">Show:</p>
         <button
           type="button"
           className={`btn !min-h-10 !px-3 !py-2 text-sm sm:!px-4 ${
