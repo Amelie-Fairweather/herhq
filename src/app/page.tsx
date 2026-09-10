@@ -33,7 +33,10 @@ export default async function HomePage() {
           className="h-20 w-20 rounded-2xl object-cover shadow-md ring-1 ring-[var(--line)] sm:h-24 sm:w-24 md:h-28 md:w-28"
         />
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--rose)] sm:text-xs sm:tracking-[0.22em]">
+          <p className="display text-base leading-snug text-[var(--ink)] sm:text-lg">
+            Empowering the Next Generation Through Complete History
+          </p>
+          <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--rose)] sm:text-xs sm:tracking-[0.22em]">
             Welcome back{session ? `, ${session.name}` : ""}
           </p>
           <h2 className="display mt-2 text-3xl text-[var(--ink)] sm:text-4xl md:text-5xl">

@@ -45,6 +45,9 @@ export default function LoginPage() {
     <div className="shell relative flex min-h-screen items-center justify-center bg-[#fff5fb] px-4 py-8 sm:px-5 sm:py-12">
       <div className="relative z-10 grid w-full max-w-5xl gap-8 md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-10">
         <div className="fade-up order-1 text-center md:order-none md:text-left">
+          <p className="display mx-auto mb-4 max-w-md text-lg leading-snug text-[#9b1468] sm:mb-5 sm:text-xl md:mx-0 md:text-2xl">
+            Empowering the Next Generation Through Complete History
+          </p>
           <Image
             src="/logo.jpeg"
             alt="H.E.R. Education Required logo"
